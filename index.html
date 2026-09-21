@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>دفتر کالا برگ</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="کالا برگ">
+<meta name="theme-color" content="#2B3A32">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%232B3A32'/%3E%3Ctext x='50' y='64' font-size='46' text-anchor='middle' fill='%23F3EEE4' font-family='sans-serif'%3E%DA%A9%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%232B3A32'/%3E%3Ctext x='50' y='64' font-size='46' text-anchor='middle' fill='%23F3EEE4' font-family='sans-serif'%3E%DA%A9%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --paper:#F3EEE4;
+    --ink:#2B3A32;
+    --ink-soft:#5A6A5D;
+    --line:#D8CFB9;
+    --stamp:#8A3B2E;
+    --stamp-soft:#C9846F;
+    --card:#FFFDF7;
+    --danger:#8A3B2E;
+    --ok:#3E6B4F;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:radial-gradient(circle at 1px 1px, rgba(43,58,50,0.06) 1px, transparent 0);
+    background-size:18px 18px;
+    color:var(--ink);
+    font-family:"Vazirmatn","Tahoma","Segoe UI",sans-serif;
+    min-height:100vh;
+    padding-bottom:110px;
+  }
+  header{
+    padding:24px 20px 16px;
+    text-align:center;
+    border-bottom:2px solid var(--line);
+  }
+  header .eyebrow{font-size:12.5px;color:var(--stamp);letter-spacing:.5px;margin-bottom:8px;}
+  .nameInput{
+    width:100%;
+    max-width:360px;
+    border:none;
+    border-bottom:1.5px solid var(--line);
+    background:transparent;
+    font-family:inherit;
+    font-size:20px;
+    font-weight:800;
+    color:var(--ink);
+    text-align:center;
+    padding:4px 4px 6px;
+  }
+  .nameInput:focus{outline:none;border-bottom-color:var(--stamp);}
+  header .sub{margin-top:8px;font-size:12.5px;color:var(--ink-soft);}
+  .yearRow{
+    display:flex;justify-content:center;align-items:center;gap:6px;
+    margin-top:10px;font-size:14px;color:var(--ink-soft);
+  }
+  .yearRow input{
+    width:64px;text-align:center;border:none;border-bottom:1.5px dashed var(--stamp-soft);
+    background:transparent;font-family:inherit;font-size:15px;color:var(--stamp);font-weight:700;padding:2px 0;
+  }
+  .statusLine{
+    text-align:center;font-size:11.5px;color:var(--ok);min-height:16px;margin-top:8px;
+    transition:opacity .3s;
+  }
+  .statusLine.warn{color:var(--danger);}
+  main{max-width:520px;margin:0 auto;padding:18px 14px 0;}
+  .rows{display:flex;flex-direction:column;gap:10px;}
+  .row{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:12px 14px;display:grid;grid-template-columns:30px 1fr 1fr 34px;
+    align-items:center;gap:10px;box-shadow:0 1px 0 rgba(43,58,50,0.04);
+  }
+  .row .idx{font-size:13px;color:var(--ink-soft);font-weight:700;text-align:center;}
+  .field label{display:block;font-size:10.5px;color:var(--ink-soft);margin-bottom:3px;}
+  .field input{
+    width:100%;border:none;border-bottom:1.5px solid var(--line);background:transparent;
+    font-family:inherit;font-size:15px;color:var(--ink);padding:3px 2px;text-align:center;
+  }
+  .field input:focus{outline:none;border-bottom-color:var(--stamp);}
+  .dateField{display:flex;gap:4px;align-items:flex-end;}
+  .dateField .d,.dateField .m{width:34px;flex:none;}
+  .dateField span.sep{color:var(--ink-soft);padding-bottom:5px;}
+  .delBtn{
+    width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:transparent;
+    color:var(--danger);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+  .delBtn:active{background:rgba(138,59,46,0.1);}
+  .addBtn{
+    margin:14px 0 4px;width:100%;padding:13px;border-radius:10px;
+    border:1.5px dashed var(--stamp-soft);background:transparent;color:var(--stamp);
+    font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;
+  }
+  .addBtn:active{background:rgba(138,59,46,0.06);}
+  .totalBar{
+    position:fixed;bottom:0;left:0;right:0;background:var(--ink);color:var(--paper);
+    padding:14px 20px calc(14px + env(safe-area-inset-bottom));
+    display:flex;justify-content:space-between;align-items:center;
+    box-shadow:0 -4px 14px rgba(0,0,0,0.15);
+  }
+  .totalBar .label{font-size:13px;opacity:.75;}
+  .totalBar .amount{font-size:20px;font-weight:800;letter-spacing:.3px;}
+  .totalBar .amount .unit{font-size:12px;font-weight:400;opacity:.7;margin-right:4px;}
+  .empty{text-align:center;color:var(--ink-soft);font-size:13.5px;padding:30px 10px;line-height:1.9;}
+  .toolbar{
+    max-width:520px;margin:0 auto;padding:0 14px;
+    display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+  }
+  .toolbar button{
+    background:none;border:none;color:var(--ink-soft);font-family:inherit;
+    font-size:12.5px;padding:6px 4px;cursor:pointer;text-decoration:underline;
+  }
+  .helpBox{
+    max-width:520px;margin:16px auto 0;padding:14px 16px;
+    background:rgba(43,58,50,0.05);border:1px solid var(--line);border-radius:10px;
+    font-size:12.5px;color:var(--ink-soft);line-height:2;
+  }
+  .helpBox b{color:var(--ink);}
+  #fileInput{display:none;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">دفتر ثبت</div>
+  <input class="nameInput" id="bookName" value="دفتر کالا برگ" placeholder="نام دفتر را وارد کنید">
+  <div class="sub">تاریخ و قیمت هر خرید را ثبت کنید — جمع کل خودکار محاسبه می‌شود</div>
+  <div class="yearRow">سال دفتر: <input type="tel" id="bookYear" maxlength="4" value="1405"></div>
+  <div class="statusLine" id="statusLine"></div>
+</header>
+
+<div class="toolbar">
+  <button id="backupBtn">پشتیبان‌گیری (دانلود)</button>
+  <button id="restoreBtn">بازیابی از فایل</button>
+  <button id="clearAllBtn">پاک‌کردن همه</button>
+</div>
+<input type="file" id="fileInput" accept="application/json">
+
+<main>
+  <div class="rows" id="rows"></div>
+  <div class="empty" id="emptyMsg" style="display:none;">
+    هنوز ردیفی ثبت نشده.<br>با دکمه‌ی زیر اولین خرید را اضافه کنید.
+  </div>
+  <button class="addBtn" id="addBtn">+ افزودن ردیف جدید</button>
+
+  <div class="helpBox" id="helpBox">
+    <b>اگر اطلاعات ذخیره نمی‌شود:</b> برخی مرورگرهای موبایل حافظه محلی را برای فایل‌های باز‌شده از حافظه گوشی (file://) غیرفعال می‌کنند. در این حالت از دکمه‌ی «پشتیبان‌گیری» برای دانلود یک فایل پشتیبان استفاده کنید و هر بار قبل از بستن، آن را دوباره دانلود کنید؛ برای بازگرداندن اطلاعات هم از «بازیابی از فایل» استفاده کنید.
+  </div>
+</main>
+
+<div class="totalBar">
+  <span class="label">جمع کل</span>
+  <span class="amount"><span id="totalAmount">0</span><span class="unit">تومان</span></span>
+</div>
+
+<script>
+const STORAGE_KEY = 'kala_barg_ledger_v1';
+let storageWorks = true;
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){
+    storageWorks = false;
+  }
+  return { name:'دفتر کالا برگ', year:'1405', items:[] };
+}
+function saveData(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    showStatus('ذخیره شد ✓', false);
+  }catch(e){
+    storageWorks = false;
+    showStatus('حافظه مرورگر در دسترس نیست — از «پشتیبان‌گیری» استفاده کنید', true);
+  }
+}
+
+let statusTimer;
+function showStatus(msg, isWarn){
+  const el = document.getElementById('statusLine');
+  el.textContent = msg;
+  el.className = 'statusLine' + (isWarn ? ' warn' : '');
+  if(!isWarn){
+    clearTimeout(statusTimer);
+    statusTimer = setTimeout(() => { el.textContent=''; }, 1600);
+  }
+}
+
+let state = loadData();
+if(!state.items) state.items = [];
+if(!state.year) state.year = '1405';
+if(!state.name) state.name = 'دفتر کالا برگ';
+
+const rowsEl = document.getElementById('rows');
+const emptyMsg = document.getElementById('emptyMsg');
+const totalAmountEl = document.getElementById('totalAmount');
+const bookYearInput = document.getElementById('bookYear');
+const bookNameInput = document.getElementById('bookName');
+bookYearInput.value = state.year;
+bookNameInput.value = state.name;
+document.title = state.name;
+
+function toFa(str){
+  const en='0123456789', fa='۰۱۲۳۴۵۶۷۸۹';
+  return String(str).replace(/[0-9]/g, d => fa[en.indexOf(d)]);
+}
+function toEn(str){
+  const en='0123456789', fa='۰۱۲۳۴۵۶۷۸۹';
+  return String(str).replace(/[۰-۹]/g, d => en[fa.indexOf(d)]);
+}
+function formatPrice(n){
+  n = toEn(n).replace(/[^\d]/g,'');
+  if(!n) return '';
+  return toFa(Number(n).toLocaleString('en-US'));
+}
+function rawPrice(n){
+  return Number(toEn(n).replace(/[^\d]/g,'')) || 0;
+}
+
+function render(){
+  rowsEl.innerHTML = '';
+  emptyMsg.style.display = state.items.length ? 'none' : 'block';
+
+  state.items.forEach((item, i) => {
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = `
+      <div class="idx">${toFa(i+1)}</div>
+      <div class="field dateField">
+        <div><label>روز</label><input type="tel" class="d" maxlength="2" placeholder="--" value="${item.day?toFa(item.day):''}"></div>
+        <span class="sep">/</span>
+        <div><label>ماه</label><input type="tel" class="m" maxlength="2" placeholder="--" value="${item.month?toFa(item.month):''}"></div>
+      </div>
+      <div class="field">
+        <label>قیمت (تومان)</label>
+        <input type="tel" class="p" placeholder="۰" value="${item.price?formatPrice(item.price):''}">
+      </div>
+      <button class="delBtn" title="حذف">✕</button>
+    `;
+
+    const dInput = row.querySelector('.d');
+    const mInput = row.querySelector('.m');
+    const pInput = row.querySelector('.p');
+    const delBtn = row.querySelector('.delBtn');
+
+    dInput.addEventListener('input', () => {
+      item.day = toEn(dInput.value).replace(/[^\d]/g,'').slice(0,2);
+      dInput.value = item.day ? toFa(item.day) : '';
+      saveData();
+    });
+    mInput.addEventListener('input', () => {
+      item.month = toEn(mInput.value).replace(/[^\d]/g,'').slice(0,2);
+      mInput.value = item.month ? toFa(item.month) : '';
+      saveData();
+    });
+    pInput.addEventListener('input', () => {
+      item.price = rawPrice(pInput.value);
+      pInput.value = item.price ? formatPrice(item.price) : '';
+      updateTotal();
+      saveData();
+    });
+    delBtn.addEventListener('click', () => {
+      state.items.splice(i,1);
+      saveData();
+      render();
+    });
+
+    rowsEl.appendChild(row);
+  });
+
+  updateTotal();
+}
+
+function updateTotal(){
+  const total = state.items.reduce((sum,it) => sum + (Number(it.price)||0), 0);
+  totalAmountEl.textContent = toFa(total.toLocaleString('en-US'));
+}
+
+document.getElementById('addBtn').addEventListener('click', () => {
+  state.items.push({ day:'', month:'', price:0 });
+  saveData();
+  render();
+  setTimeout(() => {
+    const inputs = rowsEl.querySelectorAll('.row');
+    const last = inputs[inputs.length-1];
+    if(last) last.querySelector('.d').focus();
+  }, 50);
+});
+
+document.getElementById('clearAllBtn').addEventListener('click', () => {
+  if(confirm('همه‌ی ردیف‌ها پاک شوند؟ این کار قابل بازگشت نیست.')){
+    state.items = [];
+    saveData();
+    render();
+  }
+});
+
+bookYearInput.addEventListener('input', () => {
+  state.year = toEn(bookYearInput.value).replace(/[^\d]/g,'').slice(0,4);
+  bookYearInput.value = state.year ? toFa(state.year) : '';
+  saveData();
+});
+
+bookNameInput.addEventListener('input', () => {
+  state.name = bookNameInput.value || 'دفتر کالا برگ';
+  document.title = state.name;
+  saveData();
+});
+
+document.getElementById('backupBtn').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const safeName = (state.name || 'دفتر-کالا-برگ').replace(/[\\/:*?"<>|]/g,'-');
+  a.href = url;
+  a.download = safeName + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  showStatus('فایل پشتیبان دانلود شد', false);
+});
+
+document.getElementById('restoreBtn').addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+document.getElementById('fileInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      if(!data || !Array.isArray(data.items)) throw new Error('bad file');
+      state = data;
+      if(!state.name) state.name = 'دفتر کالا برگ';
+      if(!state.year) state.year = '1405';
+      bookNameInput.value = state.name;
+      bookYearInput.value = toFa(state.year);
+      document.title = state.name;
+      saveData();
+      render();
+      showStatus('اطلاعات بازیابی شد ✓', false);
+    }catch(err){
+      alert('فایل پشتیبان معتبر نیست.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+render();
+
+// Warn early if localStorage is genuinely unavailable on this device/browser.
+try{
+  localStorage.setItem('__test__','1');
+  localStorage.removeItem('__test__');
+}catch(e){
+  storageWorks = false;
+  showStatus('حافظه مرورگر در دسترس نیست — از «پشتیبان‌گیری» استفاده کنید', true);
+}
+</script>
+</body>
+</html>
